@@ -1,14 +1,18 @@
 import React, { Fragment } from "react";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { dispatch } from "rxjs/internal/observable/range";
 
-const TodoList = ({ todos, addTodo }) => {
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import * as TodoActions from "./store/actions/todos";
+
+const TodoList = ({ todos, addTodo, removeTodo }) => {
   return (
     <Fragment>
       <ul>
         {todos.map(todo => (
-          <li key={todo.id}>{todo.text}</li>
+          <li key={todo.id}>
+            {todo.text} <button onClick={() => removeTodo(todo.id)}>x</button>
+          </li>
         ))}
       </ul>
       <button onClick={() => addTodo("Novo Todo")}>Adicionar</button>
@@ -18,6 +22,7 @@ const TodoList = ({ todos, addTodo }) => {
 
 TodoList.propTypes = {
   addTodo: PropTypes.func.isRequired,
+  removeTodo: PropTypes.func.isRequired,
   todos: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
@@ -31,13 +36,8 @@ const mapStateToProps = state => ({
   todos: state.todos
 });
 
-const mapDispatchToProps = dispatch => ({
-  addTodo: text =>
-    dispatch({
-      type: "ADD_TODO",
-      payload: { text }
-    })
-});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(TodoActions, dispatch);
 
 export default connect(
   mapStateToProps,
